@@ -27,22 +27,60 @@ services:
     ports:
       - "9997:80"
 
-  nginx:
-    image: nginx:latest
+  # なんかdownで止まる... sudo service docker restart しないといけなくなる
+  # nginx:
+  #   image: nginx:latest
+  #   ports:
+  #     - 80:80
+  #   logging:
+  #     driver: "fluentd"
+  #     options:
+  #       fluentd-address: localhost:5140
+  #       tag: "docker.{{.Name}}"
+  #   depends_on:
+  #     - fluentd
+
+  # fluentd:
+  #   image: fluent/fluentd:v1.15.3-1.0
+  #   volumes:
+  #     - .:/fluentd/etc/
+  #   ports:
+  #     - 24224:24224
+  #     - 24224:24224/udp
+
+  elasticsearch:
+    image: elasticsearch:8.11.3
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "TZ=Japan"
+      - xpack.security.enabled=false
+    expose:
+      - 9200
+      - 9300
     ports:
-      - 80:80
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: "docker.{{.Name}}"
-    depends_on:
-      - fluentd
+      - "9200:9200"
+      - "9300:9300"
+
+  kibana:
+    image: kibana:8.11.3
+    container_name: kibana
+    environment:
+      - "TZ=Japan"
+    ports:
+      - "5601:5601"
 
   fluentd:
-    image: fluent/fluentd:v1.15.3-1.0
+    build:
+      context: .
+      target: fluentd
+    container_name: fluentd
     volumes:
-      - .:/fluentd/etc/
+      - ./fluentd/conf:/fluentd/etc
+      - ./fluentd/logs:/fluentd/log
     ports:
-      - 24224:24224
-      - 24224:24224/udp
+      - "5140:5140"
+      - "5140:5140/udp"
+    links:
+      - "elasticsearch"
