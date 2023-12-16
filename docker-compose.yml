@@ -1,0 +1,48 @@
+version: '3'
+services:
+  dozzle:
+    image: amir20/dozzle:latest
+    environment:
+      - DOZZLE_FILTER=status=running
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "9999:8080"
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    ports:
+      - "9998:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    tty: true
+    stdin_open: true
+
+  filemanager:
+    image: tigerdockermediocore/tinyfilemanager-docker:2.4.3
+    ports:
+      - "9997:80"
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: "docker.{{.Name}}"
+    depends_on:
+      - fluentd
+
+  fluentd:
+    image: fluent/fluentd:v1.15.3-1.0
+    volumes:
+      - .:/fluentd/etc/
+    ports:
+      - 24224:24224
+      - 24224:24224/udp
