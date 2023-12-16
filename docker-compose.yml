@@ -28,25 +28,17 @@ services:
       - "9997:80"
 
   # なんかdownで止まる... sudo service docker restart しないといけなくなる
-  # nginx:
-  #   image: nginx:latest
-  #   ports:
-  #     - 80:80
-  #   logging:
-  #     driver: "fluentd"
-  #     options:
-  #       fluentd-address: localhost:5140
-  #       tag: "docker.{{.Name}}"
-  #   depends_on:
-  #     - fluentd
-
-  # fluentd:
-  #   image: fluent/fluentd:v1.15.3-1.0
-  #   volumes:
-  #     - .:/fluentd/etc/
-  #   ports:
-  #     - 24224:24224
-  #     - 24224:24224/udp
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:5140
+        tag: "docker-.{{.Name}}"
+    depends_on:
+      - fluentd
 
   elasticsearch:
     image: elasticsearch:8.11.3
