@@ -41,7 +41,7 @@ services:
       options:
         fluentd-address: localhost:5140
         tag: "docker.{{.Name}}"
-    restart: always
+        fluentd-async-connect: "true"
 
   elasticsearch:
     container_name: elasticsearch
