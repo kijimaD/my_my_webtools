@@ -48,6 +48,8 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - "TZ=Japan"
       - xpack.security.enabled=false
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
     expose:
       - 9200
       - 9300
@@ -76,3 +78,7 @@ services:
       - "5140:5140/udp"
     links:
       - "elasticsearch"
+
+volumes:
+  es-data:
+    driver: local
