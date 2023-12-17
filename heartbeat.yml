@@ -1,0 +1,12 @@
+# Configure monitors
+heartbeat.monitors:
+- type: http
+  # List or urls to query
+  urls:
+    - "http://kibana:5601"
+    - "http://host.docker.internal:80"
+  # Configure task schedule
+  schedule: '@every 10s'
+
+output.elasticsearch:
+  hosts: 'elasticsearch:9200'
