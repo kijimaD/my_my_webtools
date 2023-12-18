@@ -1,0 +1,22 @@
+# alertの定義
+groups:
+- name: blackbox_exporter
+  rules:
+  - alert: http_success
+    # jobを選択
+    expr: probe_success{job='app'} != 1
+    for: 2s
+    labels:
+      severity: critical
+    annotations:
+      summary: "{{ $labels.instance }}: http request not return 200"
+      description: "{{ $labels.instance }} http request not return 200 for more than 10 seconds."
+  - alert: http_success
+    # jobを選択
+    expr: probe_success{job='blackbox'} != 1
+    for: 2s
+    labels:
+      severity: critical
+    annotations:
+      summary: "{{ $labels.instance }}: http request not return 200"
+      description: "{{ $labels.instance }} http request not return 200 for more than 10 seconds."

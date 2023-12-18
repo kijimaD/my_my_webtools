@@ -1,0 +1,18 @@
+route:
+  receiver: prometheus-msteams
+  # グループ化の設定(アラート名）
+  group_by:
+    - http_success
+  # alertグループの通知の送信を最初に待機する時間
+  group_wait: 10s
+  # alertグループでの最小送信間隔(新しいアラート送信まで待機する時間)
+  group_interval: 5m
+  # 通知を再度送信するまで待機する時間
+  repeat_interval: 1h
+
+receivers:
+- name: 'prometheus-msteams'
+  # https://prometheus.io/docs/alerting/configuration/#webhook_config
+  webhook_configs:
+  - send_resolved: true
+    url: 'http://prometheus-msteams:2000/alertmanager'
